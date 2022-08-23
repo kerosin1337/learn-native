@@ -15,6 +15,7 @@ import DatePicker from 'react-native-date-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {format} from 'date-fns';
 import DropDownPicker from 'react-native-dropdown-picker';
+import CustomButton from '../../components/CustomButton';
 
 const Profile: React.FC = () => {
   const getRandomColor = () => {
@@ -214,44 +215,20 @@ const Profile: React.FC = () => {
               />
             </View>
             <View>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#32357C',
-                  padding: '5%',
-                  borderRadius: 100,
-                  marginVertical: '5%',
-                }}
-                onPress={() => console.log('test')}>
-                <Text
-                  style={{
-                    color: 'white',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                  }}>
-                  СОХРАНИТЬ ИЗМЕНЕНИЯ
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={{
+              <CustomButton
+                button={{backgroundColor: '#32357C', color: 'white'}}
+                style={{marginVertical: '5%'}}>
+                СОХРАНИТЬ ИЗМЕНЕНИЯ
+              </CustomButton>
+              <CustomButton
+                button={{
                   backgroundColor: 'white',
-                  padding: '5%',
-                  borderRadius: 100,
                   borderColor: '#32357C',
-                  borderWidth: 1,
+                  color: '#32357C',
                 }}
                 onPress={() => console.log('test')}>
-                <Text
-                  style={{
-                    color: '#32357C',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                  }}>
-                  ИЗМЕНИТЬ ПАРОЛЬ
-                </Text>
-              </TouchableOpacity>
+                ИЗМЕНИТЬ ПАРОЛЬ
+              </CustomButton>
             </View>
           </View>
         </ScrollView>

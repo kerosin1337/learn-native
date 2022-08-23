@@ -9,24 +9,36 @@
  */
 
 import React from 'react';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import SignIn from './src/views/auth/SignIn';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import Register from './src/views/auth/Register';
-import {Alert, Text, TouchableOpacity} from 'react-native';
+import {Alert, Platform, Text, TouchableOpacity} from 'react-native';
 import Main from './src/views/main/Main';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {logout} from './src/store/user/reducer';
 import Profile from './src/views/main/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppDispatch} from './src/store/store';
+import {NavigationContainer, ParamListBase} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const Stack = createNativeStackNavigator<{
+let Stack = createNativeStackNavigator<{
   SignIn: undefined;
   SignUp: undefined;
   Main: undefined;
   Profile: {name: string};
 }>();
+
+if (Platform.OS === 'android') {
+  // @ts-ignore
+  Stack = createStackNavigator<{
+    SignIn: undefined;
+    SignUp: undefined;
+    Main: undefined;
+    Profile: {name: string};
+  }>();
+}
+
 const App = () => {
   const dispatch = useAppDispatch();
   return (
@@ -38,11 +50,16 @@ const App = () => {
           background: 'white',
           card: 'white',
           text: '#32357C',
-          border: 'red',
-          notification: 'red',
+          border: 'gray',
+          notification: 'gray',
         },
       }}>
-      <Stack.Navigator initialRouteName="SignIn">
+      <Stack.Navigator
+        initialRouteName="SignIn"
+        screenOptions={{
+          ...TransitionPresets.SlideFromRightIOS,
+          gestureEnabled: true,
+        }}>
         <Stack.Screen
           name="SignIn"
           component={SignIn}
@@ -66,6 +83,7 @@ const App = () => {
             headerLargeTitle: true,
             headerRight: () => (
               <TouchableOpacity
+                style={Platform.OS === 'android' && {paddingRight: '5%'}}
                 onPress={() => {
                   navigation.navigate('Profile', {
                     name: 'Eugene Kerov',
@@ -84,7 +102,11 @@ const App = () => {
             headerLargeTitle: true,
             headerRight: () => (
               <TouchableOpacity
-                style={{flexDirection: 'row', alignItems: 'center'}}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingRight: Platform.OS === 'android' ? '5%' : 0,
+                }}
                 onPress={() =>
                   Alert.alert('Выйти', 'Точно выйти?', [
                     {
@@ -119,5 +141,4 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
 export default App;

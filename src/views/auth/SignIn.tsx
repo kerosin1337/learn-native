@@ -2,8 +2,11 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  Pressable,
   SafeAreaView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -12,7 +15,6 @@ import React, {useEffect, useState} from 'react';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
-import {useDispatch} from 'react-redux';
 import {
   currentUser,
   setIncorrectMessage,
@@ -23,6 +25,8 @@ import {
 import {NavigationProp} from '@react-navigation/core/src/types';
 import {AppDispatch, useAppDispatch, useAppSelector} from '../../store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Link} from '@react-navigation/native';
+import TextLink from '../../components/TextLink';
 
 const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
   const {isLoading, validMessage, incorrectMessage, isLoadingCurrent} =
@@ -39,15 +43,10 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
       }) => state.user,
     );
   const dispatch = useAppDispatch();
-  AsyncStorage.getItem('accessToken').then(value => {
-    if (value) {
-      console.log(123);
-      dispatch(currentUser(navigation));
-    } else {
-      dispatch(setLoadingCurrent(false));
-      console.log(isLoadingCurrent);
-    }
-  });
+
+  useEffect(() => {
+    dispatch(currentUser(navigation));
+  }, []);
   const signInValidationSchema = yup.object().shape({
     email: yup
       .string()
@@ -102,9 +101,6 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
                 secure={true}
                 error={errors?.password || validMessage?.password}
               />
-              <Text style={{color: 'black'}}>
-                {isLoadingCurrent.toString()}
-              </Text>
               <TouchableOpacity
                 style={{
                   backgroundColor: '#32357C',
@@ -134,9 +130,7 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
                 <Text style={{color: '#32357C', marginRight: '2.5%'}}>
                   Забыли пароль?
                 </Text>
-                <TouchableOpacity>
-                  <Text style={{color: '#DE6C2E'}}>Восстановить</Text>
-                </TouchableOpacity>
+                <TextLink color={'#DE6C2E'}>Восстановить</TextLink>
               </View>
             </View>
           )}
@@ -165,31 +159,32 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
             <Text style={{color: '#32357C', marginRight: '2.5%'}}>
               Еще нет аккаунта?
             </Text>
-            <TouchableOpacity
+
+            <TextLink
+              color={'#DE6C2E'}
               onPress={() => {
                 navigation.navigate('SignUp');
               }}>
-              <Text style={{color: '#DE6C2E'}}>Зарегистрироваться</Text>
-            </TouchableOpacity>
+              Зарегистрироваться
+            </TextLink>
           </View>
         </View>
       </SafeAreaView>
-      {isLoadingCurrent && (
+      <Modal visible={isLoadingCurrent} transparent={true}>
         <View
           style={{
-            height: '100%',
-            width: '100%',
             backgroundColor: 'gray',
             opacity: 0.5,
-            position: 'absolute',
-            alignItems: 'center',
-            flexDirection: 'column',
             justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
           }}>
           <ActivityIndicator size={'large'} color="#fff" />
         </View>
-      )}
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
+
 export default SignIn;

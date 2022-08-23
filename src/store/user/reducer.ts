@@ -64,28 +64,30 @@ export const signIn = createAsyncThunk(
 
 export const currentUser = createAsyncThunk(
   'user/currentUser',
-  async (nav: any, {dispatch, rejectWithValue}) => {
+  async (nav: any, {dispatch, rejectWithValue, fulfillWithValue}) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (token) {
-        await api
+        return await api
           .get('users/current')
           .then(response => {
-            dispatch(setUser(response.data.user));
-            dispatch(
-              nav.reset({
-                index: 0,
-                routes: [{name: 'Main'}],
-              }),
-            );
+            nav.reset({
+              index: 0,
+              routes: [{name: 'Main'}],
+            });
+            return fulfillWithValue(response.data);
           })
           .catch(error => {
-            console.log(error.response);
+            return rejectWithValue(
+              error?.response?.data || {message: 'Сервер недоступен.'},
+            );
             // setMessage(error.response.data);
           });
+      } else {
+        return rejectWithValue(null);
       }
     } catch (e) {
-      console.log(e);
+      return rejectWithValue(null);
     }
   },
 );
@@ -141,14 +143,16 @@ export const userReducer = createSlice({
     [currentUser.fulfilled.toString()]: (state, action) => {
       console.log('fulfilled');
       state.isLoadingCurrent = false;
+      state.user = action.payload;
     },
     [currentUser.pending.toString()]: (state, action) => {
       console.log('pending');
       state.isLoadingCurrent = true;
     },
     [currentUser.rejected.toString()]: (state, action) => {
-      console.log('rejected');
       state.isLoadingCurrent = false;
+      state.user = undefined;
+      state.accessToken = '';
     },
   },
 });

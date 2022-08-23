@@ -42,10 +42,8 @@ const Register: React.FC<{navigation: NavigationProp<any, any>}> = ({
       .required('Password is required'),
   });
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.select({android: 'height', ios: 'padding'})}>
-      <SafeAreaView>
+    <KeyboardAvoidingView style={{flex: 1}}>
+      <SafeAreaView style={{height: '100%'}}>
         <ScrollView horizontal={false} style={{padding: '2.5%'}}>
           <View style={{width: '100%'}}>
             <TextInput

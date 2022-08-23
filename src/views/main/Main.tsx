@@ -1,16 +1,20 @@
 import {
+  Alert,
   Button,
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  Pressable,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import Card from '../../components/Card';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationProp} from '@react-navigation/native';
@@ -38,6 +42,7 @@ const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non arcu in nisi blandit consectetur in at risus. Morbi non arcu in nisi blandit consectetur in at risus. Morbi non arcu in nisi blandit consectetur in at risus.',
     },
   ];
+
   return (
     <SafeAreaView>
       <ScrollView horizontal={false} style={{padding: '2.5%', height: '100%'}}>
@@ -46,6 +51,7 @@ const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
             <Card key={index} card={item} navigation={navigation} />
           ))}
         </View>
+
         <Button title={'back'} onPress={() => {}} />
       </ScrollView>
     </SafeAreaView>
