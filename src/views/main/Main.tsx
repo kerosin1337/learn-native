@@ -1,22 +1,6 @@
-import {
-  Alert,
-  Button,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useState} from 'react';
+import {Button, SafeAreaView, ScrollView, View} from 'react-native';
+import React from 'react';
 import Card from '../../components/Card';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationProp} from '@react-navigation/native';
 
 const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({

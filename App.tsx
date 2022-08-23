@@ -19,7 +19,7 @@ import {logout} from './src/store/user/reducer';
 import Profile from './src/views/main/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppDispatch} from './src/store/store';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
+import {NavigationContainer, } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 let Stack = createNativeStackNavigator<{

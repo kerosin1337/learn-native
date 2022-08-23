@@ -1,12 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  NavigationProp,
-  useNavigation,
-  useNavigationBuilder,
-  useNavigationState,
-} from '@react-navigation/native';
+
 const initialState: {
   user?:
     | {email: string; firstname: string; id: string; lastname: string}

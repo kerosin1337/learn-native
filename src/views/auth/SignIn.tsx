@@ -1,31 +1,24 @@
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   SafeAreaView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
 import {
   currentUser,
   setIncorrectMessage,
-  setLoadingCurrent,
   setValidMessage,
   signIn,
 } from '../../store/user/reducer';
-import {NavigationProp} from '@react-navigation/core/src/types';
-import {AppDispatch, useAppDispatch, useAppSelector} from '../../store/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Link} from '@react-navigation/native';
+import {useAppDispatch, useAppSelector} from '../../store/store';
 import TextLink from '../../components/TextLink';
 
 const SignIn: React.FC<{navigation: any}> = ({navigation}) => {

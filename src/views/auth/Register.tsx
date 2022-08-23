@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
-  Button,
   KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
   ScrollView,
   Text,
@@ -11,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Formik} from 'formik';
 import * as yup from 'yup';
 import {NavigationProp} from '@react-navigation/native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';

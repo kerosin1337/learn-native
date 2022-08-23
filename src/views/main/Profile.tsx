@@ -1,5 +1,4 @@
 import {
-  Button,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
