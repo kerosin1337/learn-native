@@ -25,7 +25,10 @@ export const signIn = createAsyncThunk(
     {dispatch, rejectWithValue},
   ) => {
     await api
-      .post('users/sign-in', payload.body, {
+      .post<{
+        user: {firstname: string; lastname: string; email: string; id: string};
+        accessToken: string;
+      }>('users/sign-in', payload.body, {
         headers: {
           'Content-Type': 'application/json',
         },

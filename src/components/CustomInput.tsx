@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  FlexStyle,
   KeyboardTypeOptions,
   StyleProp,
   Text,
@@ -9,6 +10,7 @@ import {
 } from 'react-native';
 
 const CustomInput: React.FC<{
+  title?: string;
   handleChange: (text: string) => void;
   value: string;
   textContentType?:
@@ -46,8 +48,25 @@ const CustomInput: React.FC<{
   secure?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters' | undefined;
   keyboardType?: KeyboardTypeOptions | undefined;
-  style?: StyleProp<ViewStyle> | undefined;
+  style?: Pick<
+    FlexStyle,
+    | 'margin'
+    | 'marginVertical'
+    | 'marginHorizontal'
+    | 'marginTop'
+    | 'marginBottom'
+    | 'marginLeft'
+    | 'marginRight'
+    | 'padding'
+    | 'paddingVertical'
+    | 'paddingHorizontal'
+    | 'paddingTop'
+    | 'paddingBottom'
+    | 'paddingLeft'
+    | 'paddingRight'
+  >;
 }> = ({
+  title,
   handleChange,
   value,
   textContentType = 'none',
@@ -60,6 +79,9 @@ const CustomInput: React.FC<{
 }) => {
   return (
     <View style={style}>
+      {title && (
+        <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>{title}</Text>
+      )}
       <TextInput
         onChangeText={handleChange}
         value={value}

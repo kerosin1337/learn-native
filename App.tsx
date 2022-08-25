@@ -12,6 +12,7 @@ import React from 'react';
 import SignIn from './src/views/auth/SignIn';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import Register from './src/views/auth/Register';
+import InputDataTest from './src/views/main/test/InputDataTest';
 import {Alert, Platform, Text, TouchableOpacity} from 'react-native';
 import Main from './src/views/main/Main';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,25 +20,22 @@ import {logout} from './src/store/user/reducer';
 import Profile from './src/views/main/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppDispatch} from './src/store/store';
-import {NavigationContainer, } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-let Stack = createNativeStackNavigator<{
+type StackGeneric = {
   SignIn: undefined;
   SignUp: undefined;
   Main: undefined;
   Profile: {name: string};
-}>();
+  InputDataTest: {title: string};
+};
+let Stack = createStackNavigator<StackGeneric>();
 
-if (Platform.OS === 'android') {
-  // @ts-ignore
-  Stack = createStackNavigator<{
-    SignIn: undefined;
-    SignUp: undefined;
-    Main: undefined;
-    Profile: {name: string};
-  }>();
-}
+// if (Platform.OS === 'android') {
+//   // @ts-ignore
+//   Stack = createStackNavigator<StackGeneric>();
+// }
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -83,7 +81,7 @@ const App = () => {
             headerLargeTitle: true,
             headerRight: () => (
               <TouchableOpacity
-                style={Platform.OS === 'android' && {paddingRight: '5%'}}
+                style={{paddingRight: '5%'}}
                 onPress={() => {
                   navigation.navigate('Profile', {
                     name: 'Eugene Kerov',
@@ -105,7 +103,7 @@ const App = () => {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingRight: Platform.OS === 'android' ? '5%' : 0,
+                  paddingRight: '5%',
                 }}
                 onPress={() =>
                   Alert.alert('Выйти', 'Точно выйти?', [
@@ -135,6 +133,14 @@ const App = () => {
                 <Text style={{color: '#DE6C2E'}}>Выйти</Text>
               </TouchableOpacity>
             ),
+          })}
+        />
+        <Stack.Screen
+          name={'InputDataTest'}
+          component={InputDataTest}
+          options={({route}) => ({
+            title: route.params.title,
+            headerLargeTitle: true,
           })}
         />
       </Stack.Navigator>

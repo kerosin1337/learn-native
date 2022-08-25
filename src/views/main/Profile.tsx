@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {format} from 'date-fns';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomButton from '../../components/CustomButton';
+import CustomInput from '../../components/CustomInput';
 
 const Profile: React.FC = () => {
   const getRandomColor = () => {
@@ -28,7 +29,7 @@ const Profile: React.FC = () => {
   const makeStr = () => {
     let result = '';
     const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ';
     const charactersLength = characters.length;
     for (let i = 0; i < 7; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -53,48 +54,30 @@ const Profile: React.FC = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.select({android: 'height', ios: 'padding'})}
-      style={{flex: 1}}>
-      <SafeAreaView style={{flex: 1}}>
-        <ScrollView horizontal={false} style={{padding: '2.5%'}}>
+      style={{height: '100%'}}>
+      <SafeAreaView>
+        <ScrollView
+          horizontal={false}
+          style={{
+            padding: '2.5%',
+          }}>
           <View style={{width: '100%'}}>
-            <View>
-              <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>Имя</Text>
-              <TextInput
-                textContentType={'name'}
-                placeholder="Имя"
-                placeholderTextColor="#32357C"
-                style={{
-                  backgroundColor: '#F4F4FE',
-                  padding: '5%',
-                  marginBottom: '5%',
-                  borderRadius: 10,
-                  color: '#32357C',
-                }}
-                autoCapitalize={'sentences'}
-                keyboardType={'default'}
-                value={'Eugene'}
-              />
-            </View>
-            <View>
-              <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>
-                Фамилия
-              </Text>
-              <TextInput
-                textContentType={'familyName'}
-                placeholder="Фамилия"
-                placeholderTextColor="#32357C"
-                style={{
-                  backgroundColor: '#F4F4FE',
-                  padding: '5%',
-                  marginBottom: '5%',
-                  borderRadius: 10,
-                  color: '#32357C',
-                }}
-                autoCapitalize={'sentences'}
-                keyboardType={'default'}
-                value={'Kerov'}
-              />
-            </View>
+            <CustomInput
+              handleChange={() => {}}
+              value={'Eugene'}
+              placeholder={'Имя'}
+              autoCapitalize={'sentences'}
+              title={'Имя'}
+              style={{marginBottom: '5%'}}
+            />
+            <CustomInput
+              handleChange={() => {}}
+              value={'Kerov'}
+              placeholder={'Фамилия'}
+              autoCapitalize={'sentences'}
+              title={'Фамилия'}
+              style={{marginBottom: '5%'}}
+            />
             <View>
               <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>
                 Дата рождения
@@ -137,28 +120,17 @@ const Profile: React.FC = () => {
                 maximumDate={new Date()}
                 mode={'date'}
                 title={'Выберите дату своего рождения'}
+                confirmText={'Выбрать'}
               />
             </View>
-            <View>
-              <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>
-                E-mail
-              </Text>
-              <TextInput
-                textContentType={'emailAddress'}
-                placeholder="E-mail"
-                placeholderTextColor="#32357C"
-                style={{
-                  backgroundColor: '#F4F4FE',
-                  padding: '5%',
-                  marginBottom: '5%',
-                  borderRadius: 10,
-                  color: '#32357C',
-                }}
-                autoCapitalize={'none'}
-                keyboardType={'email-address'}
-                value={'test@test.ru'}
-              />
-            </View>
+            <CustomInput
+              handleChange={() => {}}
+              value={'test@test.ru'}
+              placeholder={'E-mail'}
+              title={'E-mail'}
+              style={{marginBottom: '5%'}}
+              keyboardType={'email-address'}
+            />
             <View>
               <Text style={{color: '#32357C', paddingBottom: '2.5%'}}>
                 Родной(ые) язык(и)
@@ -176,6 +148,7 @@ const Profile: React.FC = () => {
                 searchPlaceholder={'Введите название языка'}
                 placeholderStyle={{
                   color: '#32357C',
+                  paddingHorizontal: '2.5%',
                 }}
                 hideSelectedItemIcon={true}
                 searchContainerStyle={{
@@ -196,8 +169,8 @@ const Profile: React.FC = () => {
                 style={{
                   backgroundColor: '#F4F4FE',
                   borderRadius: 10,
-                  borderColor: 'none',
                   borderWidth: 0,
+                  paddingVertical: '5%',
                 }}
                 modalProps={{
                   animationType: 'slide',
@@ -213,7 +186,7 @@ const Profile: React.FC = () => {
                 )}
               />
             </View>
-            <View>
+            <View style={{marginBottom: '5%'}}>
               <CustomButton
                 button={{backgroundColor: '#32357C', color: 'white'}}
                 style={{marginVertical: '5%'}}>

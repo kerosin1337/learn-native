@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,6 +14,8 @@ import {
 import * as yup from 'yup';
 import {NavigationProp} from '@react-navigation/native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useHeaderHeight} from 'react-native-screens/native-stack';
 const Register: React.FC<{navigation: NavigationProp<any, any>}> = ({
   navigation,
 }) => {
@@ -39,7 +43,8 @@ const Register: React.FC<{navigation: NavigationProp<any, any>}> = ({
       .required('Password is required'),
   });
   return (
-    <KeyboardAvoidingView style={{flex: 1}}>
+    <KeyboardAvoidingView
+      behavior={Platform.select({android: 'height', ios: 'padding'})}>
       <SafeAreaView style={{height: '100%'}}>
         <ScrollView horizontal={false} style={{padding: '2.5%'}}>
           <View style={{width: '100%'}}>
