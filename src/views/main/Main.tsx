@@ -15,91 +15,78 @@ import React, {LegacyRef, useEffect, useRef, useState} from 'react';
 import Card from '../../components/Card';
 import {NavigationProp} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useAppDispatch, useAppSelector} from '../../store/store';
+import {getCards} from '../../store/card/reducer';
+import {currentUser} from '../../store/user/reducer';
 
 const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
   navigation,
 }) => {
-  const rnd = (len: number) => {
-    let result = '';
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ';
-    const charactersLength = characters.length;
-    for (let i = 0; i < len; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
-  const [items, setItems] = useState(
-    Array(10)
-      .fill(0)
-      .map(item =>
-        Object({
-          user: rnd(10),
-          title: rnd(10),
-          description: rnd(100),
-        }),
-      ),
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+
   const [refresh, setRefresh] = useState(false);
   const [contentVerticalOffset, setContentVerticalOffset] = useState(0);
   const CONTENT_OFFSET_THRESHOLD = 300;
   let refFlat: FlatList;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const fadeIn = () => {
-    // Will change fadeAnim value to 1 in 5 seconds
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
     }).start();
   };
-  const fadeOut = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 3000,
-      useNativeDriver: true,
-    }).start();
-  };
+
   useEffect(() => {
     if (contentVerticalOffset < CONTENT_OFFSET_THRESHOLD) {
       fadeAnim.setValue(0);
     }
   });
+
+  const {cards, isLoading, page} = useAppSelector(
+    (state: {
+      card: {
+        cards: {
+          id: string;
+          title: string;
+          description?: string;
+          status: string;
+          user: {
+            id: string;
+            firstname: string;
+            lastname: string;
+            email: string;
+          };
+        }[];
+        isLoading: boolean;
+        page: number;
+      };
+    }) => state.card,
+  );
+  useEffect(() => {
+    dispatch(getCards({page}));
+  }, []);
   return (
     <SafeAreaView>
       <FlatList
         horizontal={false}
         style={{paddingHorizontal: '2.5%', position: 'relative'}}
-        data={items}
+        data={cards}
         renderItem={({item, index}) => {
-          return items.length - 1 === index ? (
-            <>
-              <Card card={item} navigation={navigation} isLoading={isLoading} />
-            </>
-          ) : (
-            <Card card={item} navigation={navigation} />
-          );
+          // return cards.length - 1 === index ? (
+          //   <Card card={item} navigation={navigation} isLoading={isLoading} />
+          // ) : (
+          return <Card card={item} navigation={navigation} />;
+          // );
         }}
-        maxToRenderPerBatch={5}
         onEndReached={info => {
-          setIsLoading(true);
-          setTimeout(() => {
-            setIsLoading(false);
-            setItems([
-              ...items,
-              ...Array(10)
-                .fill(0)
-                .map(item =>
-                  Object({
-                    user: rnd(10),
-                    title: rnd(10),
-                    description: rnd(100),
-                  }),
-                ),
-            ]);
-          }, 1000);
+          // setTimeout(() => {
+          //   setIsLoading(false);
+          // }, 1000);
+          console.log(info);
+          dispatch(getCards({page}));
         }}
+        onEndReachedThreshold={0.25}
         keyExtractor={(item, index) => index.toString()}
         refreshControl={
           <RefreshControl
@@ -109,17 +96,6 @@ const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
             onRefresh={() => {
               setRefresh(true);
               setTimeout(() => {
-                setItems(
-                  Array(10)
-                    .fill(0)
-                    .map(item =>
-                      Object({
-                        user: rnd(10),
-                        title: rnd(10),
-                        description: rnd(100),
-                      }),
-                    ),
-                );
                 setRefresh(false);
               }, 5000);
             }}

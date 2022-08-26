@@ -4,7 +4,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationProp} from '@react-navigation/native';
 const Card: React.FC<{
   navigation: NavigationProp<any, any>;
-  card: {title: string; user: string; description: string};
+  card: {
+    title: string;
+    user: {id: string; firstname: string; lastname: string; email: string};
+    description?: string;
+    status: string;
+  };
   isLoading?: boolean;
 }> = ({card, navigation, isLoading = false}) => {
   return (
@@ -27,7 +32,7 @@ const Card: React.FC<{
             flexWrap: 'wrap',
           }}>
           <View>
-            <Text style={{color: '#32357C'}}>{card.user}</Text>
+            <Text style={{color: '#32357C'}}>{card.user.firstname}</Text>
           </View>
           <View
             style={{
@@ -35,7 +40,7 @@ const Card: React.FC<{
               backgroundColor: '#219653',
               borderRadius: 100,
             }}>
-            <Text style={{color: 'white'}}>Активный</Text>
+            <Text style={{color: 'white'}}>{card.status}</Text>
           </View>
         </View>
         <View style={{marginTop: '2.5%'}}>
@@ -59,7 +64,11 @@ const Card: React.FC<{
           </TouchableOpacity>
         </View>
       </View>
-      {isLoading && <ActivityIndicator size={'large'} color={'#32357C'} />}
+      <ActivityIndicator
+        style={{display: isLoading ? 'flex' : 'none'}}
+        size={'large'}
+        color={'#32357C'}
+      />
     </>
   );
 };

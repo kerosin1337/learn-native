@@ -19,8 +19,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {logout} from './src/store/user/reducer';
 import Profile from './src/views/main/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useAppDispatch} from './src/store/store';
-import {NavigationContainer} from '@react-navigation/native';
+import {useAppDispatch, useAppSelector} from './src/store/store';
+import {CommonActions, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 type StackGeneric = {
@@ -39,6 +39,9 @@ let Stack = createStackNavigator<StackGeneric>();
 
 const App = () => {
   const dispatch = useAppDispatch();
+  const {user} = useAppSelector(
+    (state: {user: {user: {firstname: string}}}) => state.user,
+  );
   return (
     <NavigationContainer
       theme={{
@@ -84,7 +87,7 @@ const App = () => {
                 style={{paddingRight: '5%'}}
                 onPress={() => {
                   navigation.navigate('Profile', {
-                    name: 'Eugene Kerov',
+                    name: user.firstname,
                   });
                 }}>
                 <Icon name="account-circle" size={30} color="#32357C" />
@@ -116,14 +119,14 @@ const App = () => {
                       onPress: async () => {
                         try {
                           await AsyncStorage.removeItem('accessToken');
+                          navigation.reset({
+                            index: 0,
+                            routes: [{name: 'SignIn'}],
+                          });
                           dispatch(logout());
                         } catch (e) {
                           console.log(e);
                         }
-                        navigation.reset({
-                          index: 0,
-                          routes: [{name: 'SignIn'}],
-                        });
                       },
                       style: 'destructive',
                     },

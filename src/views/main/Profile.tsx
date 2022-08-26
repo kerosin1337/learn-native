@@ -16,8 +16,16 @@ import {format} from 'date-fns';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
+import {useAppSelector} from '../../store/store';
 
 const Profile: React.FC = () => {
+  const {user} = useAppSelector(
+    (state: {
+      user: {
+        user: {firstname: string; lastname: string; email: string; id: string};
+      };
+    }) => state.user,
+  );
   const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -64,7 +72,7 @@ const Profile: React.FC = () => {
           <View style={{width: '100%'}}>
             <CustomInput
               handleChange={() => {}}
-              value={'Eugene'}
+              value={user?.firstname}
               placeholder={'Имя'}
               autoCapitalize={'sentences'}
               title={'Имя'}
@@ -72,7 +80,7 @@ const Profile: React.FC = () => {
             />
             <CustomInput
               handleChange={() => {}}
-              value={'Kerov'}
+              value={user?.lastname}
               placeholder={'Фамилия'}
               autoCapitalize={'sentences'}
               title={'Фамилия'}
@@ -125,7 +133,7 @@ const Profile: React.FC = () => {
             </View>
             <CustomInput
               handleChange={() => {}}
-              value={'test@test.ru'}
+              value={user?.email}
               placeholder={'E-mail'}
               title={'E-mail'}
               style={{marginBottom: '5%'}}

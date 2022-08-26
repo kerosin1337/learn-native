@@ -1,6 +1,9 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import api from '../../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {AxiosError} from 'axios';
+import {Alert} from 'react-native';
+import {CommonActions} from '@react-navigation/native';
 
 const initialState: {
   user?:
@@ -24,7 +27,7 @@ export const signIn = createAsyncThunk(
     payload: {body: {email: string; password: string}; nav: any},
     {dispatch, rejectWithValue},
   ) => {
-    await api
+    return await api
       .post<{
         user: {firstname: string; lastname: string; email: string; id: string};
         accessToken: string;
@@ -45,16 +48,20 @@ export const signIn = createAsyncThunk(
         );
       })
       .catch(error => {
-        error = error.response.data;
-        if (error.statusCode === 422) {
+        const serverError = error?.response?.data;
+        if (serverError?.statusCode === 422) {
           const newMessage: {[key: string]: string} = {};
-          for (const key of error.message) {
+          for (const key of serverError.message) {
             newMessage[key.property] = key.code;
           }
           dispatch(setValidMessage(newMessage));
         }
-        if (error.statusCode === 404) {
-          dispatch(setIncorrectMessage(error.message));
+        if (serverError?.statusCode === 404) {
+          dispatch(setIncorrectMessage(serverError.message));
+        }
+        if (error?.code === AxiosError.ERR_NETWORK) {
+          Alert.alert('Сервис недоступен');
+          return rejectWithValue(null);
         }
       });
   },
@@ -69,13 +76,18 @@ export const currentUser = createAsyncThunk(
         return await api
           .get('users/current')
           .then(response => {
-            nav.reset({
-              index: 0,
-              routes: [{name: 'Main'}],
-            });
+            nav.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'Main'}],
+              }),
+            );
             return fulfillWithValue(response.data);
           })
-          .catch(error => {
+          .catch(async error => {
+            await AsyncStorage.removeItem('accessToken').catch(error => {
+              console.log(error);
+            });
             return rejectWithValue(
               error?.response?.data || {message: 'Сервер недоступен.'},
             );
@@ -130,12 +142,15 @@ export const userReducer = createSlice({
   },
   extraReducers: {
     [signIn.fulfilled.toString()]: (state, action) => {
+      console.log('fulfilled signIn');
       state.isLoading = false;
     },
     [signIn.pending.toString()]: (state, action) => {
+      console.log('pending signIn');
       state.isLoading = true;
     },
     [signIn.rejected.toString()]: (state, action) => {
+      console.log('rejected signIn');
       state.isLoading = false;
     },
     [currentUser.fulfilled.toString()]: (state, action) => {
@@ -148,6 +163,7 @@ export const userReducer = createSlice({
       state.isLoadingCurrent = true;
     },
     [currentUser.rejected.toString()]: (state, action) => {
+      console.log('rejected');
       state.isLoadingCurrent = false;
       state.user = undefined;
       state.accessToken = '';
