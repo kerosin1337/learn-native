@@ -26,6 +26,7 @@ const CustomButton: React.FC<
       | 'paddingLeft'
       | 'paddingRight'
     >;
+    disabled?: boolean;
     onPress?: () => void;
   }>
 > = ({
@@ -37,6 +38,7 @@ const CustomButton: React.FC<
   },
   style,
   onPress,
+  disabled = false,
 }) => {
   return (
     <TouchableOpacity
@@ -48,7 +50,8 @@ const CustomButton: React.FC<
         borderWidth: borderColor ? 1 : 0,
         ...style,
       }}
-      onPress={onPress}>
+      onPress={onPress}
+      disabled={disabled}>
       <Text
         style={{
           color,

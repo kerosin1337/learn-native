@@ -1,4 +1,9 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  Draft,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import api from '../../api';
 
 export const getCards = createAsyncThunk(
@@ -7,6 +12,9 @@ export const getCards = createAsyncThunk(
     payload: {page: number},
     {dispatch, rejectWithValue, fulfillWithValue, getState},
   ) => {
+    if (payload.page === 1) {
+      dispatch(setIsLoading(true));
+    }
     return await api
       .get<{
         data: {
@@ -24,8 +32,42 @@ export const getCards = createAsyncThunk(
         totalItems: number;
       }>('cards', {params: {page: payload.page}})
       .then(response => {
+        dispatch(setIsLoading(false));
         if (response.data.data.length) {
           dispatch(setCards(response.data.data));
+          dispatch(setPage(null));
+        } else {
+          dispatch(setLast(true));
+        }
+      })
+      .catch(error => {
+        console.log(error.response);
+      });
+  },
+);
+
+export const refreshCard = createAsyncThunk(
+  'card/refresh',
+  async (payload, {dispatch, rejectWithValue, fulfillWithValue, getState}) => {
+    return await api
+      .get<{
+        data: {
+          title: string;
+          description?: string;
+          status: string;
+          user: {
+            email: string;
+            firstname: string;
+            id: string;
+            lastname: string;
+          };
+        }[];
+        pageLimit: number;
+        totalItems: number;
+      }>('cards', {params: {page: 1}})
+      .then(response => {
+        if (response.data.data.length) {
+          dispatch(setCards({data: response.data.data, refresh: true}));
           dispatch(setPage(null));
         } else {
           dispatch(setLast(true));
@@ -44,17 +86,30 @@ const initialState: {
     status: string;
     user: {email: string; firstname: string; id: string; lastname: string};
   }[];
+  isLoadingPage: boolean;
   isLoading: boolean;
   isLast: boolean;
   page: number;
-} = {cards: [], isLoading: false, isLast: false, page: 1};
+  refresh: boolean;
+} = {
+  cards: [],
+  isLoadingPage: false,
+  isLoading: false,
+  isLast: false,
+  page: 1,
+  refresh: false,
+};
 
 export const cardReducer = createSlice({
   name: 'card',
   initialState,
   reducers: {
     setCards: (state, action) => {
-      state.cards = [...state.cards, ...action.payload];
+      if (action.payload?.refresh) {
+        state.cards = action.payload.data;
+      } else {
+        state.cards = [...state.cards, ...action.payload];
+      }
     },
     setPage: (state, action) => {
       state.page = state.page + 1;
@@ -62,26 +117,39 @@ export const cardReducer = createSlice({
     setLast: (state, action) => {
       state.isLast = true;
     },
+    setRefresh: (state, action) => {
+      state.refresh = action.payload;
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
   extraReducers: {
     [getCards.fulfilled.toString()]: (state, action) => {
       console.log('fulfilled get cards');
-      state.isLoading = false;
-
-      // state.cards = [...state.cards, ...action.payload.data];
-      // ...state,
-      // cards: state.cards.concat(action.payload.data),
+      state.isLoadingPage = false;
     },
     [getCards.pending.toString()]: (state, action) => {
       console.log('pending get cards');
       if (!state.isLast) {
-        state.isLoading = true;
+        state.isLoadingPage = true;
       }
     },
     [getCards.rejected.toString()]: (state, action) => {
       console.log('rejected get cards');
-      state.isLoading = false;
+    },
+    [refreshCard.fulfilled.toString()]: (state, action) => {
+      console.log('fulfilled refreshCard');
+      state.refresh = false;
+    },
+    [refreshCard.pending.toString()]: (state, action) => {
+      console.log('pending refreshCard');
+      state.refresh = true;
+    },
+    [refreshCard.rejected.toString()]: (state, action) => {
+      console.log('rejected refreshCard');
+      state.refresh = false;
     },
   },
 });
-export const {setCards, setPage, setLast} = cardReducer.actions;
+export const {setCards, setPage, setLast, setIsLoading} = cardReducer.actions;

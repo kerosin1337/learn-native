@@ -20,6 +20,8 @@ import {
 } from '../../store/user/reducer';
 import {useAppDispatch, useAppSelector} from '../../store/store';
 import TextLink from '../../components/TextLink';
+import CustomText from '../../components/CustomText';
+import CustomButton from '../../components/CustomButton';
 
 const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
   const {isLoading, validMessage, incorrectMessage, isLoadingCurrent} =
@@ -108,21 +110,24 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
                 {isLoading ? (
                   <ActivityIndicator size={'small'} color="#fff" />
                 ) : (
-                  <Text
+                  <CustomText
+                    fontSize={16}
                     style={{
+                      textTransform: 'uppercase',
                       color: 'white',
                       textAlign: 'center',
                       fontWeight: 'bold',
-                      textTransform: 'uppercase',
                     }}>
                     Войти
-                  </Text>
+                  </CustomText>
                 )}
               </TouchableOpacity>
               <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <Text style={{color: '#32357C', marginRight: '2.5%'}}>
+                <CustomText
+                  fontSize={14}
+                  style={{color: '#32357C', marginRight: '2.5%'}}>
                   Забыли пароль?
-                </Text>
+                </CustomText>
                 <TextLink color={'#DE6C2E'}>Восстановить</TextLink>
               </View>
             </View>
@@ -139,20 +144,20 @@ const SignIn: React.FC<{navigation: any}> = ({navigation}) => {
                 padding: '5%',
                 borderRadius: 10,
               }}>
-              <Text
+              <CustomText
+                fontSize={16}
                 style={{
                   textAlign: 'center',
                   color: 'white',
                 }}>
                 {incorrectMessage}
-              </Text>
+              </CustomText>
             </View>
           )}
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Text style={{color: '#32357C', marginRight: '2.5%'}}>
+            <CustomText fontSize={14} style={{marginRight: '2.5%'}}>
               Еще нет аккаунта?
-            </Text>
-
+            </CustomText>
             <TextLink
               color={'#DE6C2E'}
               onPress={() => {

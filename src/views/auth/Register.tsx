@@ -16,6 +16,7 @@ import {NavigationProp} from '@react-navigation/native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useHeaderHeight} from 'react-native-screens/native-stack';
+import CheckBox from '../../components/CheckBox';
 const Register: React.FC<{navigation: NavigationProp<any, any>}> = ({
   navigation,
 }) => {
@@ -126,36 +127,12 @@ const Register: React.FC<{navigation: NavigationProp<any, any>}> = ({
               autoCapitalize={'none'}
               secureTextEntry={true}
             />
-            <BouncyCheckbox
-              size={20}
-              fillColor="#DE6C2E"
-              unfillColor="white"
-              text="Я подтверждаю согласие с политикой обработки персональных данных"
-              textStyle={{
-                color: '#32357C',
-                fontSize: 14,
-                fontWeight: 'normal',
-                textDecorationLine: 'none',
-              }}
-              onPress={isChecked => {
-                setCheckboxState(isChecked);
-              }}
-              iconStyle={{
-                borderRadius: 0,
-                borderWidth: 0,
-              }}
-              innerIconStyle={{
-                borderRadius: 0,
-                borderWidth: checkboxState ? 0 : 2,
-                borderColor: '#32357C',
-              }}
-              iconImageStyle={{
-                width: 15,
-                height: 15,
-              }}
-              style={{
-                marginVertical: '2.5%',
-              }}
+            <CheckBox
+              setState={setCheckboxState}
+              state={checkboxState}
+              text={
+                'Я подтверждаю согласие с политикой обработки персональных данных'
+              }
             />
             <TouchableOpacity
               style={{

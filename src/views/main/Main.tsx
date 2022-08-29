@@ -16,15 +16,15 @@ import Card from '../../components/Card';
 import {NavigationProp} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useAppDispatch, useAppSelector} from '../../store/store';
-import {getCards} from '../../store/card/reducer';
+import {getCards, refreshCard, setCards} from '../../store/card/reducer';
 import {currentUser} from '../../store/user/reducer';
+import CustomText from '../../components/CustomText';
 
 const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
   navigation,
 }) => {
   const dispatch = useAppDispatch();
 
-  const [refresh, setRefresh] = useState(false);
   const [contentVerticalOffset, setContentVerticalOffset] = useState(0);
   const CONTENT_OFFSET_THRESHOLD = 300;
   let refFlat: FlatList;
@@ -43,93 +43,122 @@ const Main: React.FC<{navigation: NavigationProp<any, any>}> = ({
     }
   });
 
-  const {cards, isLoading, page} = useAppSelector(
-    (state: {
-      card: {
-        cards: {
-          id: string;
-          title: string;
-          description?: string;
-          status: string;
-          user: {
+  const {cards, isLoading, page, refresh, isLast, isLoadingPage} =
+    useAppSelector(
+      (state: {
+        card: {
+          cards: {
             id: string;
-            firstname: string;
-            lastname: string;
-            email: string;
-          };
-        }[];
-        isLoading: boolean;
-        page: number;
-      };
-    }) => state.card,
-  );
+            title: string;
+            description?: string;
+            status: string;
+            user: {
+              id: string;
+              firstname: string;
+              lastname: string;
+              email: string;
+            };
+          }[];
+          isLoading: boolean;
+          isLoadingPage: boolean;
+          page: number;
+          refresh: boolean;
+          isLast: boolean;
+        };
+      }) => state.card,
+    );
   useEffect(() => {
     dispatch(getCards({page}));
+    return () => {
+      dispatch(setCards({refresh: true, data: []}));
+    };
   }, []);
   return (
-    <SafeAreaView>
-      <FlatList
-        horizontal={false}
-        style={{paddingHorizontal: '2.5%', position: 'relative'}}
-        data={cards}
-        renderItem={({item, index}) => {
-          // return cards.length - 1 === index ? (
-          //   <Card card={item} navigation={navigation} isLoading={isLoading} />
-          // ) : (
-          return <Card card={item} navigation={navigation} />;
-          // );
-        }}
-        onEndReached={info => {
-          // setTimeout(() => {
-          //   setIsLoading(false);
-          // }, 1000);
-          console.log(info);
-          dispatch(getCards({page}));
-        }}
-        onEndReachedThreshold={0.25}
-        keyExtractor={(item, index) => index.toString()}
-        refreshControl={
-          <RefreshControl
-            refreshing={refresh}
-            colors={['#141414', '#32357C', '#DE6C2E', '#D1D1F9', '#F4F4FE']}
-            tintColor={'#DE6C2E'}
-            onRefresh={() => {
-              setRefresh(true);
-              setTimeout(() => {
-                setRefresh(false);
-              }, 5000);
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1}}>
+        {!isLoading ? (
+          <FlatList
+            horizontal={false}
+            style={{paddingHorizontal: '2.5%', position: 'relative'}}
+            data={cards}
+            renderItem={({item, index}) => {
+              return cards.length - 1 === index && !isLast ? (
+                <>
+                  <Card card={item} navigation={navigation} />
+                  <ActivityIndicator size={'large'} color={'#32357C'} />
+                </>
+              ) : (
+                <Card card={item} navigation={navigation} />
+              );
+            }}
+            onEndReached={info => {
+              console.log(info);
+              dispatch(getCards({page}));
+            }}
+            onEndReachedThreshold={0.25}
+            keyExtractor={(item, index) => index.toString()}
+            refreshControl={
+              <RefreshControl
+                refreshing={refresh}
+                colors={['#141414', '#32357C', '#DE6C2E', '#D1D1F9', '#F4F4FE']}
+                tintColor={'#DE6C2E'}
+                onRefresh={() => {
+                  dispatch(refreshCard());
+                }}
+              />
+            }
+            ref={ref => {
+              refFlat = ref!;
+            }}
+            onScroll={event => {
+              setContentVerticalOffset(event.nativeEvent.contentOffset.y);
             }}
           />
-        }
-        ref={ref => {
-          refFlat = ref!;
-        }}
-        onScroll={event => {
-          setContentVerticalOffset(event.nativeEvent.contentOffset.y);
-        }}
-      />
-      <Animated.View style={{opacity: fadeAnim}}>
-        {contentVerticalOffset > CONTENT_OFFSET_THRESHOLD && (
-          <TouchableOpacity
-            onLayout={event => {
-              fadeIn();
-            }}
+        ) : (
+          <View
             style={{
-              backgroundColor: '#32357C',
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              padding: 15,
-              borderRadius: 100,
-              margin: 20,
-            }}
-            onPress={() => {
-              refFlat.scrollToOffset({animated: true, offset: 0});
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <Icon name={'arrow-up'} size={30} color={'#DE6C2E'} />
-          </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <CustomText
+                fontSize={16}
+                style={{fontWeight: 'bold', marginRight: '2.5%'}}>
+                Загрузка
+              </CustomText>
+              <ActivityIndicator size={'small'} color={'#32357C'} />
+            </View>
+          </View>
         )}
-      </Animated.View>
+
+        <Animated.View style={{opacity: fadeAnim}}>
+          {contentVerticalOffset > CONTENT_OFFSET_THRESHOLD && (
+            <TouchableOpacity
+              onLayout={event => {
+                fadeIn();
+              }}
+              style={{
+                backgroundColor: '#32357C',
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                padding: 15,
+                borderRadius: 100,
+                margin: 20,
+              }}
+              onPress={() => {
+                refFlat.scrollToOffset({animated: true, offset: 0});
+              }}>
+              <Icon name={'arrow-up'} size={30} color={'#DE6C2E'} />
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+      </View>
     </SafeAreaView>
   );
 };
